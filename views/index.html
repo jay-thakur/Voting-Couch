@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Voting App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- <link href="/public/css/main.css" rel="stylesheet" type="text/css"> -->
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <style>
+      .jumbotron {
+          background-color: #0091ea;
+          color: #ffffff;
+      }
+      .thumbnail{
+        border-radius:20px;
+        margin: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+      .thumbnail h4{
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Voting Couch</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a data-toggle="modal" href="#signUpModal"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+          <li><a data-toggle="modal" href="#loginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- jumbotron -->
+    <div class="jumbotron text-center">
+      <h1>Voting Couch</h1>
+      <p>Create Custom polls with live results</p>
+      <button type="button" class="btn btn-lg btn-success" id="signUpBtn">Sign Up</button>
+    </div>
+
+    <div class="container-fluid text-center">
+      <h2>Latest Polls</h2>
+      <div class="row text-center" id="latestPolls">
+
+      </div>
+    </div>
+
+    <!-- signup model Starts-->
+    <div class="modal fade" id="signUpModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4><span class="glyphicon glyphicon-lock"></span> Sign Up</h4>
+          </div>
+          <div class="modal-body">
+            <form class="" action="/home/signup" method="post">
+              <div class="form-group">
+                <label for="name"><span class="glyphicon glyphicon-user"></span>Name</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label for="username"><span class="glyphicon glyphicon-user"></span>User Name</label>
+                <input type="text" class="form-control" name="emailId" placeholder="Enter email">
+              </div>
+              <div class="form-group">
+                <label for="password"><span class="glyphicon glyphicon-eye-open"></span>Password</label>
+                <input type="text" class="form-control" name="password" placeholder="Enter password">
+              </div>
+            <button type="submit" class="btn btn-default btn-success btn-block"><span class="glyphicon glyphicon-off"></span> Sign up</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <p>Already member? <a data-dismiss="modal" data-toggle="modal" href="#loginModal"> Login</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- signup model end-->
+    <!-- login model -->
+    <div class="modal fade" id="loginModal" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal Content -->
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
+          </div>
+          <div class="modal-body">
+            <form class="" action="/home/login" method="post">
+              <div class="form-group">
+                <label for="username"><span class="glyphicon glyphicon-user"></span>User Name</label>
+                <input type="text" class="form-control" name="emailId" placeholder="Enter email">
+              </div>
+              <div class="form-group">
+                <label for="password"><span class="glyphicon glyphicon-eye-open"></span>Password</label>
+                <input type="text" class="form-control" name="password" placeholder="Enter password">
+              </div>
+              <div class="checkbox">
+              <label><input type="checkbox" value="" checked>Remember me</label>
+            </div>
+            <button type="submit" class="btn btn-default btn-success btn-block"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <p>Not a member? <a data-dismiss="modal" data-toggle="modal" href="#signUpModal">Sign Up</a></p>
+            <p>Forgot <a href="#">Password?</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    $(document).ready(function(){
+      $("#signUpBtn").click(function(){
+        $("#signUpModal").modal();
+      });
+
+      $.ajax({
+      	type: 'GET',
+      	url: '/getlatestPolls',
+        success: function(data){
+          //data.polls.length
+          //alert("success : data : id : "+data[0]._id);
+        	for(var i = 0; i < data.length; i++){
+        		var html = '<div class="col-sm-4">';
+        		html +=	'<div class="thumbnail">';
+        		html +=	'<h4><strong>'+data[i].pollName+'</strong></h4>';
+        		html +=	'<a class="btn btn-primary" href="/poll/' +data[i]._id +'" role="button">View Poll</a>';
+        		html +=	'</div>';
+        		html +=	'</div>';
+        		$('#latestPolls').append(html);
+        	}
+        }
+      });
+    });
+</script>
+</html>

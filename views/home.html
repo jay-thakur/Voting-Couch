@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Welcome Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+      .jumbotron {
+          background-color: #0091ea;
+          color: #ffffff;
+      }
+      .thumbnail{
+        border-radius:20px;
+        margin: 20px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+      .thumbnail h3{
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Voting Couch</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right" id="nav-right">
+          <!-- <li><a data-toggle="modal" href="#signUpModal"><span class="glyphicon glyphicon-user"></span>Jay</a></li> -->
+          <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+    <!-- jumbotron -->
+    <div class="jumbotron text-center">
+      <h1>Dashboard</h1>
+      <p>What would you like to do today ?</p>
+      <button type="button" class="btn btn-lg btn-success" id="newPollBtn">New Poll</button>
+      <button type="button" class="btn btn-lg btn-success" id="myPollBtn">My Poll</button>
+    </div>
+
+    <div class="text-center collapse in" id="newPollDiv">
+      <h1>New Poll</h1>
+      <div class="col-sm-4 col-sm-offset-4">
+        <form>
+          <div class="form-group">
+            <label for="newPoll">Name your new Poll</label>
+            <input type="text" class="form-control" id="newPollId" name="newPollTitle" placeholder="Who is your favourite cricketer?">
+          </div>
+          <div id="optionsList" class="form-group">
+            <label for="options">Options</label>
+            <input type="text" class="form-control" id="option1" name="option1" placeholder="M S Dhoni">
+            <input type="text" class="form-control" id="option2" name="option2" placeholder="Virat Kohli">
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-lg btn-default" id="moreOptions">Add More Options</button>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-success" id="submit" name="button">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- my poll div Starts  here -->
+    <div class="text-center collapse" id="myPollDiv">
+      <h1>My Poll</h1>
+      <div class="row text-center" id="myPolls">
+
+      </div>
+    </div>
+    <!-- my poll div ends here -->
+
+    <!-- Poll created div Starts-->
+    <div class="text-center collapse col-sm-4 col-sm-offset-4" id="pollCreated">
+      <div class="thumbnail" id="pollCreatedGreetings">
+        <h3>Congratulations !</h3>
+
+      </div>
+    </div>
+    <!-- Poll created div end-->
+  </body>
+
+  <script>
+
+    $(document).ready(function(){
+      getName();
+      // get user name
+      function getName() {
+        $.ajax({
+          type: 'GET',
+          url: '/getName',
+          success: function(data){
+            const navNameHtml = '<li><a data-toggle="modal" href="#signUpModal"><span class="glyphicon glyphicon-user"></span>'+data+'</a></li>';
+            $("#nav-right").prepend(navNameHtml);
+          }
+        });
+      }
+
+      var optionNo = 2;
+      $("#moreOptions").click(function(){
+        optionNo = optionNo + 1;
+        $("#optionsList").append
+        ('<div class="input-group"><input type="text" class="form-control" name="option' + optionNo +'" placeholder="New option field"><i class="input-group-btn"><button class="btn btn-danger btn-minus" type="button"><i class="glyphicon glyphicon-minus"></i></button></i></div>');
+      });
+      $(document).on('click', ".btn-minus", function(e) {
+        $(this).closest('.input-group').remove();
+      });
+      $("#newPollBtn").click(function(){
+        $("#pollCreated").hide();
+        $("#myPollDiv").hide();
+        $("#newPollDiv").show();
+      });
+      $("#myPollBtn").click(function(){
+        $("#pollCreated").hide();
+        $("#newPollDiv").hide();
+        getMyPolls();
+        $("#myPollDiv").show();
+      });
+
+      $("#submit").click(function (e) {
+        e.preventDefault();
+          const optionsArr = [];
+          $('#optionsList input').each(function () {
+            optionsArr.push({options: this.value});
+          });
+          const data = {
+            newPollTitle: $('#newPollId').val(),
+            options: optionsArr
+          };
+          $.ajax({
+            url: '/home/newPoll',
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            cache: false,
+            success: function(data){
+              alert("congrts");
+              alert("data id"+data._id);
+              $("#newPollDiv").hide();
+		          $("#myPollDiv").hide();
+              const pollCreatedLink = window.location.hostname+'/poll/'+data._id;
+              const pollCreatedLinkHtml = '<h4>Your Poll has been posted to <a href="'+pollCreatedLink+'">'+pollCreatedLink+'</a></h4>';
+              $("#pollCreatedGreetings").append(pollCreatedLinkHtml);
+		          $("#pollCreated").show();
+
+              //alert("host name : "+window.location.hostname);
+            },
+            error: function(data){
+              console.log('could not save data');
+            }
+          });
+      });
+
+    function getMyPolls() {
+      $.ajax({
+        type: 'GET',
+        url: '/home/myPolls',
+        success: function(data){
+          for(var i = 0; i < data.length; i++){
+            var html = '<div class="col-sm-4">';
+            html +=	'<div class="thumbnail">';
+            html +=	'<h4><strong>'+data[i].pollName+'</strong></h4>';
+            html +=	'<a class="btn btn-primary" href="/poll/' +data[i]._id +'" role="button">View Poll</a>';
+            html +=	'</div>';
+            html +=	'</div>';
+            $('#myPolls').append(html);
+          }
+        }
+      });
+    }
+
+    });
+
+  </script>
+</html>
