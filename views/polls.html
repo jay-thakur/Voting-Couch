@@ -34,9 +34,7 @@
         <div class="navbar-header">
           <a class="navbar-brand" href="#">Voting Couch</a>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a data-toggle="modal" href="/home"><span class="glyphicon glyphicon-user"></span> Home</a></li>
-          <li><a data-toggle="modal" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+        <ul class="nav navbar-nav navbar-right" id="nav-right">
         </ul>
       </div>
     </nav>
@@ -59,7 +57,7 @@
             </div>
             <div id="pollLinkRow" class="pollDisplay text-center">
                 <h3>Poll Link</h3>
-				        
+
             </div>
         </div>
         <div class="col-xs-5 col-sm-5 col-sm-offset-1 pollDisplay text-center">
@@ -70,6 +68,28 @@
   <script>
 
     $(document).ready(function(){
+      getName();
+      // get user name
+      function getName() {
+        $.ajax({
+          type: 'GET',
+          url: '/getName',
+          success: function(data){
+            if (!$.trim(data)){
+                //alert("data is blank: " + data);
+                const navHomeHtml = '<li><a data-toggle="modal" href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>';
+                $("#nav-right").append(navHomeHtml);
+            }
+            else{
+                const navNameHtml = '<li><a href="#"><span class="glyphicon glyphicon-user"></span>'+' '+data+'</a></li>';
+                $("#nav-right").append(navNameHtml);
+                const navlogoutHtml = '<li><a data-toggle="modal" href="/logout"><span class="glyphicon glyphicon-log-out"></span> LogOut</a></li>';
+                $("#nav-right").append(navlogoutHtml);
+            }
+          }
+        });
+      }
+
       // adding poll link
       const pollLinkHtml = '<input type="text" class="form-control" name="pollLink" value="'+window.location.href+'" disabled>';
       $("#pollLinkRow").append(pollLinkHtml);

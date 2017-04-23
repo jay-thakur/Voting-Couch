@@ -141,7 +141,9 @@ app.get('/getlatestPolls', function (req, res) {
 app.get('/poll/:id', function (req, res) {
   console.log(req.params.id);
   req.session.pollId = req.params.id;
+  req.session.emailId = req.session.emailId;
   console.log("session : display poll of id : "+req.session.pollId);
+  console.log("session : email id : "+req.session.emailId);
   res.sendFile(__dirname+'/views/polls.html');
 });
 

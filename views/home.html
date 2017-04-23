@@ -16,6 +16,8 @@
         margin: 20px;
         padding-top: 20px;
         padding-bottom: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
       }
       .thumbnail h3{
@@ -30,8 +32,7 @@
           <a class="navbar-brand" href="#">Voting Couch</a>
         </div>
         <ul class="nav navbar-nav navbar-right" id="nav-right">
-          <!-- <li><a data-toggle="modal" href="#signUpModal"><span class="glyphicon glyphicon-user"></span>Jay</a></li> -->
-          <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+
         </ul>
       </div>
     </nav>
@@ -95,8 +96,17 @@
           type: 'GET',
           url: '/getName',
           success: function(data){
-            const navNameHtml = '<li><a data-toggle="modal" href="#signUpModal"><span class="glyphicon glyphicon-user"></span>'+data+'</a></li>';
-            $("#nav-right").prepend(navNameHtml);
+            if (!$.trim(data)){
+                alert("data is blank: " + data);
+                const navHomeHtml = '<li><a data-toggle="modal" href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>';
+                $("#nav-right").append(navHomeHtml);
+            }
+            else{
+                const navNameHtml = '<li><a href="#"><span class="glyphicon glyphicon-user"></span>'+' '+data+'</a></li>';
+                $("#nav-right").append(navNameHtml);
+                const navlogoutHtml = '<li><a data-toggle="modal" href="/logout"><span class="glyphicon glyphicon-log-out"></span> LogOut</a></li>';
+                $("#nav-right").append(navlogoutHtml);
+            }
           }
         });
       }
@@ -139,12 +149,11 @@
             data: data,
             cache: false,
             success: function(data){
-              // alert("congrts");
-              // alert("data id"+data._id);
+              //alert("data id"+data._id);
               $("#newPollDiv").hide();
 		          $("#myPollDiv").hide();
               const pollCreatedLink = window.location.hostname+'/poll/'+data._id;
-              const pollCreatedLinkHtml = '<h4>Your Poll has been posted to <br> <a href="'+pollCreatedLink+'">'+pollCreatedLink+'</a></h4>';
+              const pollCreatedLinkHtml = '<h4>Your Poll has been posted to <br> <a href="/poll/'+data._id+'">'+pollCreatedLink+'</a></h4>';
               $("#pollCreatedGreetings").append(pollCreatedLinkHtml);
 		          $("#pollCreated").show();
 
