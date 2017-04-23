@@ -139,12 +139,12 @@
             data: data,
             cache: false,
             success: function(data){
-              alert("congrts");
-              alert("data id"+data._id);
+              // alert("congrts");
+              // alert("data id"+data._id);
               $("#newPollDiv").hide();
 		          $("#myPollDiv").hide();
               const pollCreatedLink = window.location.hostname+'/poll/'+data._id;
-              const pollCreatedLinkHtml = '<h4>Your Poll has been posted to <a href="'+pollCreatedLink+'">'+pollCreatedLink+'</a></h4>';
+              const pollCreatedLinkHtml = '<h4>Your Poll has been posted to <br> <a href="'+pollCreatedLink+'">'+pollCreatedLink+'</a></h4>';
               $("#pollCreatedGreetings").append(pollCreatedLinkHtml);
 		          $("#pollCreated").show();
 
